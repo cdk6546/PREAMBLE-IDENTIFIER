@@ -20,7 +20,7 @@ def importdata():
     print(balance_data.columns)
     
     #Need to pull out the columns we want
-    current_features = ['POSITION', 'MAXPOSITION', 'NORMALIZED_POSITION']
+    current_features = ['WORD', 'TYPE', 'POSITION', 'GRAMMAR_PATTERN']
     df_class = balance_data[['CORRECT_TAG']]
     df_input = balance_data[current_features] 
 	
@@ -94,9 +94,16 @@ if __name__ == '__main__':
     #Split on features and correct labels
     X, Y, X_train, X_test, y_train, y_test = splitdataset(df_input, df_class)
     
+    
     clf_gini = train_using_gini(X_train, X_test, y_train)
     clf_entropy = train_using_entropy(X_train, X_test, y_train)
     unique_values = np.unique(y_train)
+    count = np.count_nonzero(y_train == "PRE")
+    count_again = np.count_nonzero(y_test == "PRE")
+    
+    print("count train: ", count)
+    print("count input: ", count_again)
+    
     # Visualizing the Decision Trees
     plot_decision_tree(clf_gini, current_features, unique_values)
     plot_decision_tree(clf_entropy, current_features, unique_values)
