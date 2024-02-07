@@ -20,9 +20,10 @@ def importdata():
     print(balance_data.columns)
     
     #Need to pull out the columns we want
+    current_features = ['POSITION', 'MAXPOSITION', 'NORMALIZED_POSITION']
     df_class = balance_data[['CORRECT_TAG']]
-    df_input = balance_data[['POSITION', 'MAXPOSITION', 'NORMALIZED_POSITION']]
-    
+    df_input = balance_data[current_features] 
+	
     #Encoding-- good
     label_encoders = {}
     for column in df_input.columns:
@@ -32,7 +33,7 @@ def importdata():
             label_encoders[column] = label_encoder
 
     #Return features and correct labels
-    return df_input, df_class
+    return df_input, current_features, df_class
 
 # Function to split the dataset into features and target variables
 # df_input is our X (features), df_class is our Y (Correctly labeled samples)
@@ -88,17 +89,17 @@ def plot_decision_tree(clf_object, feature_names, class_names):
     plt.show()
 
 if __name__ == '__main__':
-    df_input, df_class = importdata()
+    df_input, current_features, df_class = importdata()
     
     #Split on features and correct labels
     X, Y, X_train, X_test, y_train, y_test = splitdataset(df_input, df_class)
     
     clf_gini = train_using_gini(X_train, X_test, y_train)
     clf_entropy = train_using_entropy(X_train, X_test, y_train)
-    
+    unique_values = np.unique(y_train)
     # Visualizing the Decision Trees
-    plot_decision_tree(clf_gini, ['X1', 'X2', 'X3', 'X4'], ['N', 'DT', 'CJ', 'P', 'NPL', 'NM', 'V', 'VM', 'PR', 'D', 'PRE'])
-    plot_decision_tree(clf_entropy, ['X1', 'X2', 'X3', 'X4'], ['N', 'DT', 'CJ', 'P', 'NPL', 'NM', 'V', 'VM', 'PR', 'D', 'PRE'])
+    plot_decision_tree(clf_gini, current_features, unique_values)
+    plot_decision_tree(clf_entropy, current_features, unique_values)
 
     
     # Evaluating and printing accuracy for both models
