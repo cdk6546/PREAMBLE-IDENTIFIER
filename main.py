@@ -98,11 +98,12 @@ if __name__ == '__main__':
     clf_gini = train_using_gini(X_train, X_test, y_train)
     clf_entropy = train_using_entropy(X_train, X_test, y_train)
     unique_values = np.unique(y_train)
-    count = np.count_nonzero(y_train == "PRE")
-    count_again = np.count_nonzero(y_test == "PRE")
     
-    print("count train: ", count)
-    print("count input: ", count_again)
+    # count = np.count_nonzero(y_train == "PRE")
+    # count_again = np.count_nonzero(y_test == "PRE")
+    
+    # print("count train: ", count)
+    # print("count input: ", count_again)
     
     # Visualizing the Decision Trees
     plot_decision_tree(clf_gini, current_features, unique_values)
