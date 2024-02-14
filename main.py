@@ -1,3 +1,4 @@
+import random
 import numpy as np
 import pandas as pd
 from sklearn.calibration import LabelEncoder
@@ -5,13 +6,26 @@ from sklearn.metrics import confusion_matrix, accuracy_score, classification_rep
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier, plot_tree
 import matplotlib.pyplot as plt
+import sqlite3
 
 le = LabelEncoder()
 
-def importdata():
-    balance_data = pd.read_csv(
-        'https://raw.githubusercontent.com/SCANL/datasets/master/ensemble_tagger_training_data/training_data.csv',
-        sep=',')
+def read_db(sql, conn):
+    input_data = pd.read_sql_query(sql, conn)
+    print(" --  --  --  -- Read " + str(len(input_data)) + " input rows --  --  --  -- ")
+
+    # input_data_copy = input_data.copy()
+    # rows = input_data_copy.values.tolist()
+
+    input_data_copy = input_data.copy()
+    rows = input_data_copy.values.tolist()
+    random.shuffle(rows)
+    
+    input_data = pd.DataFrame(rows, columns=input_data.columns)
+    return input_data
+
+
+def importdata(balance_data):
  
     # Displaying dataset information
     print('Dataset Length: ', len(balance_data))
@@ -20,7 +34,7 @@ def importdata():
     print(balance_data.columns)
     
     #Need to pull out the columns we want
-    current_features = ['WORD', 'TYPE', 'POSITION', 'GRAMMAR_PATTERN']
+    current_features = ['WORD', 'NORMALIZED_POSITION', 'POSITION']
     df_class = balance_data[['CORRECT_TAG']]
     df_input = balance_data[current_features] 
 	
@@ -49,7 +63,7 @@ def train_using_gini(X_train, X_test, y_train):
 
     # Creating the classifier object
     clf_gini = DecisionTreeClassifier(criterion='gini',
-                                    random_state=100, max_depth=5)
+                                    random_state=100, max_depth=10)
 
     # Performing training
     clf_gini.fit(X_train, y_train)
@@ -59,7 +73,7 @@ def train_using_entropy(X_train, X_test, y_train):
 
     # Decision tree with entropy
     clf_entropy = DecisionTreeClassifier(
-        criterion='entropy', random_state=100, max_depth=5)
+        criterion='entropy', random_state=100, max_depth=10)
 
     # Performing training
     clf_entropy.fit(X_train, y_train)
@@ -88,7 +102,14 @@ def plot_decision_tree(clf_object, feature_names, class_names):
     plt.show()
 
 if __name__ == '__main__':
-    df_input, current_features, df_class = importdata()
+    conn = sqlite3.connect('scanl_tagger_training_db_1_9_2024.db')
+
+    # Create a cursor object to interact with the database
+    cursor = conn.cursor()
+
+    sql_query = "SELECT * FROM training_set"
+    balance_data = read_db(sql_query, conn)
+    df_input, current_features, df_class = importdata(balance_data)
     
     #Split on features and correct labels
     X, Y, X_train, X_test, y_train, y_test = splitdataset(df_input, df_class)
