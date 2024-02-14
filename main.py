@@ -8,6 +8,8 @@ from sklearn.tree import DecisionTreeClassifier, plot_tree
 import matplotlib.pyplot as plt
 import sqlite3
 
+from features import create_features
+
 le = LabelEncoder()
 
 def read_db(sql, conn):
@@ -25,18 +27,20 @@ def read_db(sql, conn):
     return input_data
 
 
-def importdata(balance_data):
+def import_data(balance_data):
  
     # Displaying dataset information
     print('Dataset Length: ', len(balance_data))
     print('Dataset Shape: ', balance_data.shape)
     print('Dataset: ', balance_data.head())
     print(balance_data.columns)
+    balance_data = create_features(balance_data)
     
     #Need to pull out the columns we want
-    current_features = ['WORD', 'NORMALIZED_POSITION', 'POSITION']
+    current_features = ['WORD', 'NORMALIZED_POSITION', 'POSITION', 'FIRST_WORD_CAP', 'WORD_LENGTH', 'FILE_EXT', 'WORD_TOTAL']
     df_class = balance_data[['CORRECT_TAG']]
     df_input = balance_data[current_features] 
+    print(f"checking this rq: {df_input}")
 	
     #Encoding-- good
     label_encoders = {}
@@ -109,7 +113,7 @@ if __name__ == '__main__':
 
     sql_query = "SELECT * FROM training_set"
     balance_data = read_db(sql_query, conn)
-    df_input, current_features, df_class = importdata(balance_data)
+    df_input, current_features, df_class = import_data(balance_data)
     
     #Split on features and correct labels
     X, Y, X_train, X_test, y_train, y_test = splitdataset(df_input, df_class)
