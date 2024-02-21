@@ -1,8 +1,9 @@
 import numpy as np
 import pandas as pd
 from sklearn.calibration import LabelEncoder
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix, accuracy_score, classification_report
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import GridSearchCV, StratifiedKFold, train_test_split
 from sklearn.tree import DecisionTreeClassifier, plot_tree
 import matplotlib.pyplot as plt
 
@@ -94,7 +95,6 @@ if __name__ == '__main__':
     #Split on features and correct labels
     X, Y, X_train, X_test, y_train, y_test = splitdataset(df_input, df_class)
     
-    
     clf_gini = train_using_gini(X_train, X_test, y_train)
     clf_entropy = train_using_entropy(X_train, X_test, y_train)
     unique_values = np.unique(y_train)
@@ -103,7 +103,26 @@ if __name__ == '__main__':
     # count_again = np.count_nonzero(y_test == "PRE")
     
     # print("count train: ", count)
-    # print("count input: ", count_again)
+    # print("count input: ", count_again) 
+    
+    params = {
+        'max_depth': range(1,30),
+        'criterion': ['gini', 'entropy'],
+        'n_estimators': [120, 140, 150, 160, 170, 180]
+    }
+    stratified_kfold = StratifiedKFold(n_splits=4, shuffle=True,random_state=100)
+    clf = GridSearchCV(RandomForestClassifier(random_state=100), params, cv=stratified_kfold)
+    clf.fit(X_train, np.ravel(y_train))
+    
+    #Best parameters currently:
+    # {'criterion': 'gini', 'max_depth': 17, 'n_estimators': 180}
+    # Best Score: 0.9142932776198539
+    best_model = clf.best_estimator_
+    
+    # After grid search completes
+    print("Best Parameters:", clf.best_params_)
+    print("Best Score:", clf.best_score_)
+
     
     # Visualizing the Decision Trees
     plot_decision_tree(clf_gini, current_features, unique_values)
