@@ -140,8 +140,8 @@ if __name__ == '__main__':
     # Best Score: 0.9142932776198539
 
     # Best parameters currently (Tree):
-    # {'criterion': 'entropy', 'max_depth': 10, 'max_features': 8, 'min_samples_split': 3, 'splitter': 'best'}
-    # Best Score: 0.6758770748982614
+    # {'criterion': 'entropy', 'max_depth': 11, 'max_features': 6, 'min_samples_split': 7, 'splitter': 'best'}
+    # Best Score: 0.6577651848553568
     best_model = clf.best_estimator_
 
     # After grid search completes
