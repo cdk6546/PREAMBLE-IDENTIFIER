@@ -5,7 +5,7 @@ hungarian_list = ['b', 'ch', 'c', 'dw', 'f', 'n', 'i', 'fp', 'db', 'p', 'rg', 's
 
 def create_features(data):
     data = word_total(data)
-    data = file_extension(data)
+    # data = file_extension(data)
     data = word_length(data)
     data = first_letter_capitalized(data)
     data = hungarian_notation(data)
@@ -23,19 +23,19 @@ def word_total(data):
 
 
 # this one seems like it most likely does not change anything in the accuracy
-def file_extension(data):
-    file_data = data['SYSTEM']
-    file_ext = pd.DataFrame(columns=['FILE_EXT'])
-    for element in file_data:
-        string_split = element.split(".")
-        if len(string_split) > 1:
-            current_ext = string_split[1]
-            file_ext.loc[len(file_ext), 'FILE_EXT'] = current_ext
-        else:
-            file_ext.loc[len(file_ext), 'FILE_EXT'] = "NONE"
-
-    data = pd.concat([data, file_ext], axis=1)
-    return data
+# def file_extension(data):
+#     file_data = data['SYSTEM']
+#     file_ext = pd.DataFrame(columns=['FILE_EXT'])
+#     for element in file_data:
+#         string_split = element.split(".")
+#         if len(string_split) > 1:
+#             current_ext = string_split[1]
+#             file_ext.loc[len(file_ext), 'FILE_EXT'] = current_ext
+#         else:
+#             file_ext.loc[len(file_ext), 'FILE_EXT'] = "NONE"
+#
+#     data = pd.concat([data, file_ext], axis=1)
+#     return data
 
 
 def word_length(data):
@@ -49,14 +49,17 @@ def word_length(data):
 
 
 def first_letter_capitalized(data):
-    identifier_data = data['WORD']
+    identifier_data = data['IDENTIFIER']
     first_word_cap = pd.DataFrame(columns=['FIRST_WORD_CAP'])
-    # ask newman what I should do in the case that the first character is not a letter, rn it is NaN
 
     for element in identifier_data:
-        if ord(element[0]) >= 97 and ord(element[0]) <= 122:
+        words = element.split(' ')
+        first_word = words[0]
+        first_letter = first_word[0]
+
+        if ord(first_letter) >= 97 and ord(first_letter) <= 122:
             first_word_cap.loc[len(first_word_cap), 'FIRST_WORD_CAP'] = False
-        elif ord(element[0]) >= 65 and ord(element[0]) <= 90:
+        elif ord(first_letter) >= 65 and ord(first_letter) <= 90:
             first_word_cap.loc[len(first_word_cap), 'FIRST_WORD_CAP'] = True
     data = pd.concat([data, first_word_cap], axis=1)
     return data
@@ -76,5 +79,7 @@ def hungarian_notation(data):
         else:
             hungarian.loc[len(hungarian), 'HUNGARIAN'] = False
     data = pd.concat([data, hungarian], axis=1)
+
+    # to make sure the feature is actually working
     print(f"true count: {true_count}")
     return data

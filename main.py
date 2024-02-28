@@ -38,12 +38,11 @@ def import_data(balance_data):
     balance_data = create_features(balance_data)
 
     # Need to pull out the columns we want
-    current_features = ['WORD', 'NORMALIZED_POSITION', 'POSITION', 'FIRST_WORD_CAP', 'WORD_LENGTH', 'FILE_EXT',
+    current_features = ['WORD', 'NORMALIZED_POSITION', 'POSITION', 'FIRST_WORD_CAP', 'WORD_LENGTH',
                         'WORD_TOTAL', 'HUNGARIAN']
     df_class = balance_data[['CORRECT_TAG']]
     df_input = balance_data[current_features]
 
-    # Encoding-- good
     label_encoders = {}
     for column in df_input.columns:
         if df_input[column].dtype == 'O':
@@ -130,7 +129,7 @@ if __name__ == '__main__':
         'criterion': ['gini', 'entropy'],
         'splitter': ['best', 'random'],
         'min_samples_split': range(2, 10),
-        # 'max_features': range(1, 10)
+        'max_features': range(1, 10)
     }
     stratified_kfold = StratifiedKFold(n_splits=4, shuffle=True, random_state=100)
     clf = GridSearchCV(DecisionTreeClassifier(random_state=100), params, cv=stratified_kfold)
