@@ -38,7 +38,7 @@ def import_data(balance_data):
     balance_data = create_features(balance_data)
     
     #Need to pull out the columns we want
-    current_features = ['WORD', 'NORMALIZED_POSITION', 'POSITION', 'FIRST_WORD_CAP', 'WORD_LENGTH', 'FILE_EXT', 'WORD_TOTAL']
+    current_features = ['WORD', 'NORMALIZED_POSITION', 'POSITION', 'FIRST_WORD_CAP', 'WORD_LENGTH', 'FILE_EXT', 'WORD_TOTAL', 'HUNGARIAN']
     df_class = balance_data[['CORRECT_TAG']]
     df_input = balance_data[current_features] 
     print(f"checking this rq: {df_input}")
@@ -123,24 +123,25 @@ if __name__ == '__main__':
     clf_entropy = train_using_entropy(X_train, X_test, y_train)
     unique_values = np.unique(y_train)
     
-    # count = np.count_nonzero(y_train == "PRE")
-    # count_again = np.count_nonzero(y_test == "PRE")
-    
-    # print("count train: ", count)
-    # print("count input: ", count_again) 
     
     params = {
-        'max_depth': range(1,30),
+        'max_depth': range(1,20),
         'criterion': ['gini', 'entropy'],
-        'n_estimators': [120, 140, 150, 160, 170, 180]
+        'splitter': ['best', 'random'],
+        'min_samples_split': range(2,10),
+        'max_features': range(1,10)
     }
     stratified_kfold = StratifiedKFold(n_splits=4, shuffle=True,random_state=100)
-    clf = GridSearchCV(RandomForestClassifier(random_state=100), params, cv=stratified_kfold)
+    clf = GridSearchCV(DecisionTreeClassifier(random_state=100), params, cv=stratified_kfold)
     clf.fit(X_train, np.ravel(y_train))
     
-    #Best parameters currently:
+    #Best parameters currently (Forest):
     # {'criterion': 'gini', 'max_depth': 17, 'n_estimators': 180}
     # Best Score: 0.9142932776198539
+
+    #Best parameters currently (Tree):
+    #{'criterion': 'entropy', 'max_depth': 10, 'max_features': 8, 'min_samples_split': 3, 'splitter': 'best'}
+    # Best Score: 0.6758770748982614
     best_model = clf.best_estimator_
     
     # After grid search completes
