@@ -42,7 +42,6 @@ def import_data(balance_data):
                         'WORD_TOTAL', 'HUNGARIAN']
     df_class = balance_data[['CORRECT_TAG']]
     df_input = balance_data[current_features]
-    print(f"checking this rq: {df_input}")
 
     # Encoding-- good
     label_encoders = {}
@@ -89,8 +88,6 @@ def train_using_entropy(X_train, X_test, y_train):
 # Function to make predictions
 def prediction(X_test, clf_object):
     y_pred = clf_object.predict(X_test)
-    # print('Predicted values:')
-    # print(y_pred)
     return y_pred
 
 
@@ -133,7 +130,7 @@ if __name__ == '__main__':
         'criterion': ['gini', 'entropy'],
         'splitter': ['best', 'random'],
         'min_samples_split': range(2, 10),
-        'max_features': range(1, 10)
+        # 'max_features': range(1, 10)
     }
     stratified_kfold = StratifiedKFold(n_splits=4, shuffle=True, random_state=100)
     clf = GridSearchCV(DecisionTreeClassifier(random_state=100), params, cv=stratified_kfold)
