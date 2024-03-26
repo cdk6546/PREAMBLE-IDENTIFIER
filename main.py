@@ -39,7 +39,7 @@ def import_data(balance_data):
 
     # Need to pull out the columns we want
     current_features = ['WORD', 'NORMALIZED_POSITION', 'POSITION', 'FIRST_WORD_CAP', 'WORD_LENGTH',
-                        'WORD_TOTAL', 'HUNGARIAN']
+                        'WORD_TOTAL', 'HUNGARIAN', 'FIRST_WORD_CAP_SEQ', 'HUNGARIAN_SEQ', 'NUMBER_OF_WORDS', 'WORD_VS_SYSTEM']
     df_class = balance_data[['CORRECT_TAG']]
     df_input = balance_data[current_features]
 
@@ -127,9 +127,6 @@ if __name__ == '__main__':
     params = {
         'max_depth': range(1, 20),
         'criterion': ['gini', 'entropy'],
-        'splitter': ['best', 'random'],
-        'min_samples_split': range(2, 10),
-        'max_features': range(1, 10)
     }
     stratified_kfold = StratifiedKFold(n_splits=4, shuffle=True, random_state=100)
     clf = GridSearchCV(DecisionTreeClassifier(random_state=100), params, cv=stratified_kfold)
@@ -140,8 +137,8 @@ if __name__ == '__main__':
     # Best Score: 0.9142932776198539
 
     # Best parameters currently (Tree):
-    # {'criterion': 'entropy', 'max_depth': 11, 'max_features': 6, 'min_samples_split': 7, 'splitter': 'best'}
-    # Best Score: 0.6577651848553568
+    # {'criterion': 'entropy', 'max_depth': 10}
+    # Best Score: 0.6733223914701791  
     best_model = clf.best_estimator_
 
     # After grid search completes
