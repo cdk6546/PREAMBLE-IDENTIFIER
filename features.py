@@ -24,7 +24,6 @@ def word_vs_system(data):
             system_strip = system.split('.')
             system_want = system_strip[0]
 
-            print("element: ", element)
             if system_want == element.lower():
                 word_vs_system.loc[len(word_vs_system), 'WORD_VS_SYSTEM'] = True
             else:
